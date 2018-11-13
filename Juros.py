@@ -5,48 +5,91 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 class Investimento(object):
-    def __init__( self, capital, nAportes, taxa, funAportes, diaZero=date.today(), name=None, IR=False ):
-        ''' P - aporte inicial
-            M - função que calcula o aporte mensal
-            n - número de períodos em mêses
-            i - taxa de juros em %
-            day_0 - data de início
+    def __init__( self, capital, prazo, aporte, diaZero=date.today(), name=None, IR=False ):
+        '''
+            capital     - montante inicial
+            prazo       - prazo em meses em que o dinheiro ficará aplicado
+            aporte      - função que estipula os aportes mensais
+            diaZero     - dia inicial da aplicação
+            nome        - nome da aplicação
+            IR          - False se a aplicação é livre de imposto de renda, True em caso contrário
+            indexador   - 
         '''
         self.capital = capital
         self.montante = capital
-        self.funAportes = funAportes
-        self.nAportes = nAportes
+        self.aporte = aporte
+        self.prazo = prazo
         self.diaZero = diaZero
-        self.dia = diaZero
-        self.delta_dias = timedelta(30)                     # mensal
-        self.taxa = self.calculaTaxaEquivalenteMes(taxa)
         self.name = name
         self.IR = IR
 
+        
+        self.dia = diaZero
+        self.delta_dias = timedelta(30)                     # mensal
+
         self.montanteAcumulado = []
         self.datas = []
-        self.calculaValorFuturo()
 
     def retornaDividendo( self ):
         return self.montanteAcumulado[-1] - self.capital
 
-    def calculaTaxaEquivalenteMes( self, taxa ):
-        return ((taxa/100. + 1)**(1/12.) - 1)
-
     def incrementaDia( self ):
         self.dia = self.dia + self.delta_dias
         self.datas.append( self.dia )
+
+
+
+
+class InvestimentoPreFixado( Investimento ):
+    def __init__(self, capital, prazo, taxa, aporte, diaZero=date.today(), name=None, IR=False):
+        '''
+            taxa - taxa de remuneração AO ANO
+        '''
+        Investimento.__init__(self, capital, prazo, aporte, diaZero, name, IR)
+        self.taxa = self.calculaTaxaEquivalenteMes(taxa)
         
+        self.calculaValorFuturo()
 
     def calculaValorFuturo( self ):
-        for i in range(self.nAportes):
-            M = self.funAportes(self.dia)
+        for i in range(self.prazo):
+            M = self.aporte(self.dia)
             self.montante = self.montante*(1+self.taxa)**1 + M*((self.taxa+1)**1 - 1)/self.taxa
             self.montanteAcumulado.append( self.montante )
             self.incrementaDia()
         if self.IR:
             self.montanteAcumulado[-1] *= (1-0.15)
+
+    def calculaTaxaEquivalenteMes( self, taxa ):
+        return ((taxa/100. + 1)**(1/12.) - 1)
+
+
+
+
+class InvestimentoPosFixado( Investimento ):
+    def __init__(self, capital, prazo, taxa, aporte, indexador, diaZero=date.today(), name=None, IR=False):
+        '''
+            indexador - indexador ao qual a taxa de juros está atrelada (objeto da classe Indexador)
+        '''
+        Investimento.__init__(self, capital, prazo, aporte, diaZero, name, IR)
+        self.indexador = indexador
+        
+        self.calculaValorFuturo()
+
+    def calculaValorFuturo( self ):
+        for i in range(self.prazo):            
+            M = self.aporte(self.dia)
+            taxa = self.indexador.calculaTaxa(self.dia)
+            self.montante = self.montante*(1+taxa)**1 + M*((taxa+1)**1 - 1)/taxa
+            self.montanteAcumulado.append( self.montante )
+            self.incrementaDia()
+        if self.IR:
+            self.montanteAcumulado[-1] *= (1-0.15)
+
+
+##class Indexador(object):
+##    def __
 
 def currencyTicks(x, pos):
     'The two args are the value and tick position'
@@ -62,16 +105,16 @@ def dateTicks(x, pos):
 if __name__ == '__main__':
     P = 48000
     M = 4500
-    n = 6
-    taxa = 0.65
+    n = 20*12
+    taxa = 10.5
 
-    def aporte1( dia ):
-        if dia < date(2021,12,11):
-            return 4500.
+    def aporte1( data ):
+        if data < date(2021,12,11):
+            return 0.
         else:
-            return 4500.
+            return 0.
 
-    c1 = Investimento(P, n, taxa, aporte1)
+    c1 = InvestimentoPreFixado(P, n, taxa, aporte1, date.today())
     
     yFormatter = FuncFormatter(currencyTicks)
     xFormatter = FuncFormatter(dateTicks)
@@ -80,6 +123,6 @@ if __name__ == '__main__':
     ax.yaxis.set_major_formatter(yFormatter)
     ax.xaxis.set_major_formatter(xFormatter)
 
-    plt.plot(c1.datas, c1.montanteAcumulado, '-o')
+    plt.plot(c1.datas, c1.montanteAcumulado, '.-')
     plt.grid(True)
     plt.show()

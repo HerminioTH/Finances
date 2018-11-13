@@ -21,52 +21,72 @@ def plotCenarios( investimentos ):
 class Patrimonio(object):
     def __init__( self, capital ):
         self.capital = capital
+        self.carteira = []
 
-    def investeMontante( self, montante ):
-        self.capital -= montante
-        if self.capital >= 0:
-            return montante
+    def investeCapital( self, valor=None ):
+        if valor == None:
+            valor = self.capital
+            self.capital = 0
+            return valor
         else:
-            print 'Montante excede o patrimonio.'
-            return 0
+            self.capital -= valor
+            if self.capital >= 0:
+                return valor
+            else:
+                print 'Valor excede o patrimonio.'
+                return 0
 
     def recebeDividendo( self, dividendo ):
         self.capital += dividendo
 
-class Salario(object):
-    def __init__(self, salario):
-        self.salario
 
-    def debito(self, valor):
-        self.salario -= valor
-        if self.salario >= 0:
-            return valor
+##class Salario(object):
+##    def __init__(self, salario, data):
+##        self.salario = salario
+##        self.vencimento = data.day     # Dia de recebimento
+##
+##class ContaCorrente(object):
+##    def __init__(self, salarioMensal, data):
+##        self.salario = salarioMensal
+##        self.saldo = 0
+##
+##    def calculaSaldo(self, dia):
+##        
+##        
+##    def debito(self, valor, dia):
+##        self.saldo -= valor
+##        if self.salario >= 0:
+##            return valor
 
 
 
 meuPatrimonio = Patrimonio( 48000. )
+
 prazo = 10*12
 
-investimentos = []
+carteira = []
 
-def aporte1( dia ):
-    if dia < date(2021, 12, 12):        return 3000
+def aporte1( data ):
+    if data < date(2021, 12, 12):       return 1500
     else:                               return 2000
-investimentos.append( Investimento(meuPatrimonio.investeMontante(46000), prazo, 8.3, aporte1, diaZero=date.today(), name='LCA pre 8,3% a.a.') )
+carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(28000), prazo, 8.3, aporte1, diaZero=date.today(), name='LCA pre 8,3% a.a.') )
 
-def aporte2( dia ):
-    if dia < date(2021, 11, 12):        return 1000
+def aporte2( data ):
+    if data < date(2021, 11, 12):       return 1000
     else:                               return 2000.
-investimentos.append( Investimento(meuPatrimonio.investeMontante(2000), prazo, 12.51, aporte2, diaZero=date.today(), name='XP Investor 30 FIC FIA 18,51% a.a.') )
+carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(2000), prazo, 12.51, aporte2, diaZero=date.today(), name='XP Investor 30 FIC FIA 12,51% a.a.') )
 
 
+carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(), prazo, 10.02, aporte1, diaZero=date.today(), name='CDB pre 10,02% a.a.', IR=True) )
 
-for investimento in investimentos:
+print meuPatrimonio.capital
+
+for investimento in carteira:
     meuPatrimonio.recebeDividendo( investimento.retornaDividendo() )
 
 print meuPatrimonio.capital
 
-plotCenarios( investimentos )
+plotCenarios( carteira )
 
 
 
