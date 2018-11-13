@@ -33,7 +33,7 @@ class Investimento(object):
         self.datas = []
 
     def retornaDividendo( self ):
-        return self.montanteAcumulado[-1] - self.capital
+        return self.montanteAcumulado[-1] #- self.capital
 
     def incrementaDia( self ):
         self.dia = self.dia + self.delta_dias
@@ -68,7 +68,7 @@ class InvestimentoPreFixado( Investimento ):
 
 
 class InvestimentoPosFixado( Investimento ):
-    def __init__(self, capital, prazo, taxa, aporte, indexador, diaZero=date.today(), name=None, IR=False):
+    def __init__(self, capital, prazo, aporte, indexador, diaZero=date.today(), name=None, IR=False):
         '''
             indexador - indexador ao qual a taxa de juros está atrelada (objeto da classe Indexador)
         '''
@@ -88,8 +88,34 @@ class InvestimentoPosFixado( Investimento ):
             self.montanteAcumulado[-1] *= (1-0.15)
 
 
-##class Indexador(object):
-##    def __
+class Indexador(object):
+    def __init__(self, porcentagem, name=None):
+        self.name = name
+        self.porcentagem = porcentagem
+
+class CDI(Indexador):
+    def __init__(self, cdi, porcentagem, name=None):
+        Indexador.__init__(self, porcentagem, name)
+        self.cdi = self.calculaTaxaEquivalenteMes(cdi)
+
+    def calculaTaxa(self, dia):
+        return self.cdi*self.porcentagem/100.
+    
+    def calculaTaxaEquivalenteMes( self, taxa ):
+        return ((taxa/100. + 1)**(1/12.) - 1)
+
+class IPCA(Indexador):
+    def __init__(self, ipca, porcentagem, name=None):
+        Indexador.__init__(self, porcentagem, name)
+        self.ipca = ipca
+
+    def calculaTaxa(self, dia):
+        return self.calculaTaxaEquivalenteMes(self.ipca + self.porcentagem)
+    
+    def calculaTaxaEquivalenteMes( self, taxa ):
+        return ((taxa/100. + 1)**(1/12.) - 1)
+        
+        
 
 def currencyTicks(x, pos):
     'The two args are the value and tick position'
@@ -105,16 +131,19 @@ def dateTicks(x, pos):
 if __name__ == '__main__':
     P = 48000
     M = 4500
-    n = 20*12
+    n = 3*12
     taxa = 10.5
 
     def aporte1( data ):
         if data < date(2021,12,11):
-            return 0.
+            return 4000.
         else:
             return 0.
 
     c1 = InvestimentoPreFixado(P, n, taxa, aporte1, date.today())
+
+    cdi = CDI( 15, 119, 'CDI')
+    c2 = InvestimentoPosFixado(P, n, aporte1, cdi, name='CDB Fibra')
     
     yFormatter = FuncFormatter(currencyTicks)
     xFormatter = FuncFormatter(dateTicks)
@@ -124,5 +153,6 @@ if __name__ == '__main__':
     ax.xaxis.set_major_formatter(xFormatter)
 
     plt.plot(c1.datas, c1.montanteAcumulado, '.-')
+    plt.plot(c2.datas, c2.montanteAcumulado, '.-')
     plt.grid(True)
     plt.show()

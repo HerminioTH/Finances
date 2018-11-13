@@ -59,34 +59,34 @@ class Patrimonio(object):
 ##            return valor
 
 
+if __name__ == '__main__':
+    meuPatrimonio = Patrimonio( 48000. )
 
-meuPatrimonio = Patrimonio( 48000. )
+    prazo = 10*12
 
-prazo = 10*12
+    carteira = []
 
-carteira = []
+    def aporte1( data ):
+        if data < date(2021, 12, 12):       return 1500
+        else:                               return 2000
+    carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(28000), prazo, 8.3, aporte1, diaZero=date.today(), name='LCA pre 8,3% a.a.') )
 
-def aporte1( data ):
-    if data < date(2021, 12, 12):       return 1500
-    else:                               return 2000
-carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(28000), prazo, 8.3, aporte1, diaZero=date.today(), name='LCA pre 8,3% a.a.') )
-
-def aporte2( data ):
-    if data < date(2021, 11, 12):       return 1000
-    else:                               return 2000.
-carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(2000), prazo, 12.51, aporte2, diaZero=date.today(), name='XP Investor 30 FIC FIA 12,51% a.a.') )
+    def aporte2( data ):
+        if data < date(2021, 11, 12):       return 1000
+        else:                               return 2000.
+    carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(2000), prazo, 12.51, aporte2, diaZero=date.today(), name='XP Investor 30 FIC FIA 12,51% a.a.') )
 
 
-carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(), prazo, 10.02, aporte1, diaZero=date.today(), name='CDB pre 10,02% a.a.', IR=True) )
+    carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(), prazo, 10.02, aporte1, diaZero=date.today(), name='CDB pre 10,02% a.a.', IR=True) )
 
-print meuPatrimonio.capital
+    print meuPatrimonio.capital
 
-for investimento in carteira:
-    meuPatrimonio.recebeDividendo( investimento.retornaDividendo() )
+    for investimento in carteira:
+        meuPatrimonio.recebeDividendo( investimento.retornaDividendo() )
 
-print meuPatrimonio.capital
+    print meuPatrimonio.capital
 
-plotCenarios( carteira )
+    plotCenarios( carteira )
 
 
 
