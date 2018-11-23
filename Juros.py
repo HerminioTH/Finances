@@ -92,6 +92,9 @@ class Indexador(object):
     def __init__(self, porcentagem, name=None):
         self.name = name
         self.porcentagem = porcentagem
+    
+    def calculaTaxaEquivalenteMes( self, taxa ):
+        return ((taxa/100. + 1)**(1/12.) - 1)
 
 class CDI(Indexador):
     def __init__(self, cdi, porcentagem, name=None):
@@ -100,9 +103,6 @@ class CDI(Indexador):
 
     def calculaTaxa(self, dia):
         return self.cdi*self.porcentagem/100.
-    
-    def calculaTaxaEquivalenteMes( self, taxa ):
-        return ((taxa/100. + 1)**(1/12.) - 1)
 
 class IPCA(Indexador):
     def __init__(self, ipca, porcentagem, name=None):
@@ -111,9 +111,6 @@ class IPCA(Indexador):
 
     def calculaTaxa(self, dia):
         return self.calculaTaxaEquivalenteMes(self.ipca + self.porcentagem)
-    
-    def calculaTaxaEquivalenteMes( self, taxa ):
-        return ((taxa/100. + 1)**(1/12.) - 1)
         
         
 
