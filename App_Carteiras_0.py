@@ -17,7 +17,7 @@ def aporte1( data ):
 
 
 cdi = CDI( 10, 115, 'CDI')
-ipca = IPCA( 4, 5.2, 'CDI')
+ipca = IPCA( 4, 5.2, 'IPCA')
 
 carteira = []
 carteira.append( InvestimentoPreFixado(capital, prazo, 8.3, aporte1, diaZero=date.today(), name='LCA pre 8,3% a.a.') )
