@@ -78,7 +78,7 @@ class InvestimentoPosFixado( Investimento ):
         self.calculaValorFuturo()
 
     def calculaValorFuturo( self ):
-        for i in range(self.prazo):            
+        for i in range(self.prazo):
             M = self.aporte(self.dia)
             taxa = self.indexador.calculaTaxa(self.dia)
             self.montante = self.montante*(1+taxa)**1 + M*((taxa+1)**1 - 1)/taxa

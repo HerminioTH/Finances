@@ -4,7 +4,7 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 
 meuPatrimonio = Patrimonio( 48000. )
-print meuPatrimonio.capital
+print(meuPatrimonio.capital)
 
 capital = 48000
 
@@ -12,8 +12,9 @@ prazo = 15*12
 
 
 def aporte1( data ):
-    if data < date(2021, 12, 12):       return 4000
-    else:                               return 4000
+    if data <= date(2019, 6, 1):       							return 6000
+    elif date(2019, 6, 1) < data and data < date(2021, 6, 1): 	return 4000
+    else:                               						return 0
 
 
 cdi = CDI( 10, 115, 'CDI')
@@ -26,13 +27,13 @@ carteira.append( InvestimentoPreFixado(capital, prazo, 10.02, aporte1, diaZero=d
 carteira.append( InvestimentoPosFixado(capital, prazo, aporte1, cdi, diaZero=date.today(), name='CDB pos 119% CDI', IR=True) )
 carteira.append( InvestimentoPosFixado(capital, prazo, aporte1, ipca, diaZero=date.today(), name='Tesouro Direto', IR=True) )
 
-print meuPatrimonio.capital
+print(meuPatrimonio.capital)
 
 for investimento in carteira:
     dividendo = investimento.retornaDividendo()
     meuPatrimonio.recebeDividendo( dividendo )
 
-print meuPatrimonio.capital
+print(meuPatrimonio.capital)
 
 plotCenarios( carteira )
 

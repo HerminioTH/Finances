@@ -33,7 +33,7 @@ class Patrimonio(object):
             if self.capital >= 0:
                 return valor
             else:
-                print 'Valor excede o patrimonio.'
+                print('Valor excede o patrimonio.')
                 return 0
 
     def recebeDividendo( self, dividendo ):
@@ -79,12 +79,12 @@ if __name__ == '__main__':
 
     carteira.append( InvestimentoPreFixado(meuPatrimonio.investeCapital(), prazo, 10.02, aporte1, diaZero=date.today(), name='CDB pre 10,02% a.a.', IR=True) )
 
-    print meuPatrimonio.capital
+    print(meuPatrimonio.capital)
 
     for investimento in carteira:
         meuPatrimonio.recebeDividendo( investimento.retornaDividendo() )
 
-    print meuPatrimonio.capital
+    print(meuPatrimonio.capital)
 
     plotCenarios( carteira )
 
